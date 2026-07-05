@@ -1,0 +1,13 @@
+target/
+.idea/
+*.iml
+*.class
+
+### Runtime generated data (keys, certs, votes - contains sensitive info) ###
+data/
+
+### Automated tooling artifacts - not part of the actual project ###
+.github/java-upgrade/
+
+.vscode/
+.DS_Store
