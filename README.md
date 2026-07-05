@@ -1,6 +1,6 @@
 # Secure E-Voting System
 
-A console-based **secure electronic voting system** built for the Cryptography and Computer Security course. It demonstrates a full applied-cryptography stack — a two-tier PKI, certificate-based two-factor authentication, hybrid (asymmetric + symmetric) vote encryption, digital signatures, and HMAC-protected metadata — rather than relying on any single library's "batteries-included" security.
+A console-based **secure electronic voting system** built for the Cryptography and Computer Security course. It demonstrates a full applied-cryptography stack - a two-tier PKI, certificate-based two-factor authentication, hybrid (asymmetric + symmetric) vote encryption, digital signatures, and HMAC-protected metadata - rather than relying on any single library's "batteries-included" security.
 
 ## Overview
 
@@ -16,15 +16,15 @@ Root CA
 └── Voter CA         →  issues certificates to voters only
 ```
 
-The Root CA only ever signs the two subordinate CAs — it never issues end-user certificates directly. Each issued certificate carries **key usage extensions** appropriate to its purpose (e.g. `keyCertSign`/`cRLSign` on the CA certificates, `digitalSignature`/`keyEncipherment` on end-user certificates) plus a custom extension identifying the holder's role (`Organizer` / `Voter`).
+The Root CA only ever signs the two subordinate CAs - it never issues end-user certificates directly. Each issued certificate carries **key usage extensions** appropriate to its purpose (e.g. `keyCertSign`/`cRLSign` on the CA certificates, `digitalSignature`/`keyEncipherment` on end-user certificates) plus a custom extension identifying the holder's role (`Organizer` / `Voter`).
 
 ### Two-factor login
 
-1. **Certificate check** — the user supplies their certificate, which is validated for:
+1. **Certificate check** - the user supplies their certificate, which is validated for:
    - time validity (not expired / not yet valid)
    - issuer (must chain to either the Organizer CA or the Voter CA)
    - revocation status (checked against the relevant CA's own CRL)
-2. **Credentials check** — username + password, verified against the account bound to that certificate
+2. **Credentials check** - username + password, verified against the account bound to that certificate
 
 Three consecutive failed login attempts automatically **revokes the user's certificate** (added to the appropriate CRL) and locks the account.
 
@@ -36,7 +36,7 @@ Each vote uses a **hybrid encryption** scheme:
 - The encrypted vote is **digitally signed** with the voter's private key (SHA256withRSA), so tampering or forgery is detectable
 - Voting metadata is stored separately from the votes themselves and integrity-protected with **HMAC-SHA256**
 
-At tally time, the organizer's private key decrypts each vote's symmetric key, which in turn decrypts the vote — the organizer never needs the voter's private key, and votes stay confidential until counting.
+At tally time, the organizer's private key decrypts each vote's symmetric key, which in turn decrypts the vote - the organizer never needs the voter's private key, and votes stay confidential until counting.
 
 ### Private key protection
 
@@ -54,11 +54,11 @@ Private keys are never stored in plaintext: they're encrypted with a key derived
 ## Tech Stack
 
 - **Java 21**
-- **Bouncy Castle** (`bcprov-jdk18on`, `bcpkix-jdk18on`) — X.509 certificate generation/validation, RSA/AES/HMAC primitives
-- **Gson** — JSON persistence
-- **SLF4J** — logging
-- **JUnit 4** — testing
-- **Maven** — build
+- **Bouncy Castle** (`bcprov-jdk18on`, `bcpkix-jdk18on`) - X.509 certificate generation/validation, RSA/AES/HMAC primitives
+- **Gson** - JSON persistence
+- **SLF4J** - logging
+- **JUnit 4** - testing
+- **Maven** - build
 
 ## Project Structure
 
@@ -67,7 +67,7 @@ src/main/java/etf/
 ├── auth/            # AuthenticationManager, RegistrationManager
 ├── certificates/    # CAManager (2-tier CA hierarchy), CRLManager
 ├── crypto/          # KeyManager, EncryptionManager (AES/RSA/HMAC/signatures)
-├── system/          # EVotingSystem — top-level orchestration
+├── system/          # EVotingSystem - top-level orchestration
 ├── ui/              # ConsoleInterface, OrganizerUI, VoterUI
 ├── users/           # User, Organizer, Voter
 └── voting/          # Voting, Vote, VoteProcessor, VotingCounter, VotingReport
@@ -86,8 +86,8 @@ mvn clean package
 java -jar target/evoting.jar
 ```
 
-On first run, the app bootstraps the Root CA and the two subordinate CAs under `./data/ca/`. All generated keys, certificates, and voting data are persisted under `./data/` at runtime (not included in this repository — see note below).
+On first run, the app bootstraps the Root CA and the two subordinate CAs under `./data/ca/`. All generated keys, certificates, and voting data are persisted under `./data/` at runtime (not included in this repository - see note below).
 
 ## Note on Persisted Data
 
-The `./data/` directory (CA keys/certificates, registered users, votings, cast votes) is generated at runtime and is intentionally excluded from version control — it contains encrypted private keys and personal registration data that shouldn't live in a public repository. The application recreates this directory structure automatically on first launch.
+The `./data/` directory (CA keys/certificates, registered users, votings, cast votes) is generated at runtime and is intentionally excluded from version control - it contains encrypted private keys and personal registration data that shouldn't live in a public repository. The application recreates this directory structure automatically on first launch.
